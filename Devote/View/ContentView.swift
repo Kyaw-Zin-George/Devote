@@ -58,64 +58,82 @@ struct ContentView: View {
     
     //MARK: Body
     var body: some View {
-        GeometryReader { geo in
-            NavigationView {
-                VStack {
-                    VStack(spacing: 6) {
-                        TextField("New Task",text: $task)
+        
+            NavigationStack {
+                ZStack {
+                   // backgroundGradient.ignoresSafeArea()
+                    VStack {
+                        VStack(spacing: 6) {
+                            TextField("New Task",text: $task)
+                                .padding()
+                                .background(
+                                    Color(UIColor.systemGray6)
+                                )
+                                .clipShape(RoundedRectangle(cornerRadius: 12))
+                            
+                            Button(action: {
+                                addItem()
+                            } , label: {
+                                Spacer()
+                                Text("SAVE")
+                                Spacer()
+                            })
+                            .disabled(isButtonDisabled)
                             .padding()
-                            .background(
-                                Color(UIColor.systemGray6)
+                            .font(.headline)
+                            .foregroundStyle(.white)
+                            .background( isButtonDisabled ? Color.gray :
+                                            Color(UIColor.systemRed)
+                                         
                             )
                             .clipShape(RoundedRectangle(cornerRadius: 12))
-                        
-                        Button(action: {
-                            addItem()
-                        } , label: {
-                            Spacer()
-                            Text("SAVE")
-                            Spacer()
-                        })
-                        .disabled(isButtonDisabled)
-                        .padding()
-                        .font(.headline)
-                        .foregroundStyle(.white)
-                        .background( isButtonDisabled ? Color.gray :
-                            Color(UIColor.systemRed)
-                               
-                        )
-                        .clipShape(RoundedRectangle(cornerRadius: 12))
-                        
-                    }
-                    .padding()
-                    List {
-                        ForEach(items) { item in
                             
-                            VStack(alignment: .leading) {
-                                Text(item.task ?? "")
-                                    .font(.headline)
-                                    .fontWeight(.bold)
-                                
-                                Text("Item at \(item.timestamp!, formatter: itemFormatter)")
-                                    .font(.footnote)
-                                    .foregroundStyle(.gray)
-                            }
                         }
-                        .onDelete(perform: deleteItems)
-                    }//List
-                }//VStack
+                        .padding()
+                        List {
+                            ForEach(items) { item in
+                                
+                                VStack(alignment: .leading) {
+                                    Text(item.task ?? "")
+                                        .font(.headline)
+                                        .fontWeight(.bold)
+                                    
+                                    Text("Item at \(item.timestamp!, formatter: itemFormatter)")
+                                        .font(.footnote)
+                                        .foregroundStyle(.gray)
+                                }
+                            }
+                            .onDelete(perform: deleteItems)
+                        }//List
+                        .listStyle(InsetGroupedListStyle())
+                        .shadow(color: Color(red: 0, green: 0, blue: 0), radius: 12)
+                        .padding()
+                        .frame(maxWidth: 640)
+                    }//VStack
+                }//ZStack
+//                .onAppear(){
+//                    UITableView.appearance().backgroundColor = .clear
+//                }
+                
                 .navigationTitle("Daily Task")
                 .navigationBarTitleDisplayMode(.large)
                 .toolbar {
+                    #if os(iOS)
                     ToolbarItem(placement: .navigationBarTrailing) {
                         EditButton()
                     }
+                    #endif
                     
-                }//ToolBar
+                }//toolbar
+                .background(BackgroundImageView())
+                .background(backgroundGradient.ignoresSafeArea())
                 
-                Text("Select an item")
-            }
-        }
+                
+                
+                
+            }//navigation view
+            
+     
     }
     
     
