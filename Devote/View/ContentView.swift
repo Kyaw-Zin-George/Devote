@@ -11,7 +11,8 @@ import CoreData
 struct ContentView: View {
     //MARK: - Property
     @State var task: String = ""
-    private var isButtonDisabled: Bool { task.isEmpty }
+    @State private var showNewTaskItem: Bool = false
+    
     //Fetching Data
     @Environment(\.managedObjectContext) private var viewContext
 
@@ -21,27 +22,7 @@ struct ContentView: View {
     private var items: FetchedResults<Item>
     
     //MARK: - function
-    private func addItem() {
-        withAnimation {
-            let newItem = Item(context: viewContext)
-            newItem.timestamp = Date()
-            newItem.task = task
-            newItem.completion = false
-            newItem.id = UUID()
-
-            do {
-                try viewContext.save()
-            } catch {
-                // Replace this implementation with code to handle the error appropriately.
-                // fatalError() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
-                let nsError = error as NSError
-                fatalError("Unresolved error \(nsError), \(nsError.userInfo)")
-            }
-            task = ""
-            hideKeyboard()
-        }
-    }
-
+   
     private func deleteItems(offsets: IndexSet) {
         withAnimation {
             offsets.map { items[$0] }.forEach(viewContext.delete)
@@ -62,34 +43,29 @@ struct ContentView: View {
             NavigationStack {
                 ZStack {
                    // backgroundGradient.ignoresSafeArea()
+                    //MARK: - Main View
                     VStack {
-                        VStack(spacing: 6) {
-                            TextField("New Task",text: $task)
-                                .padding()
-                                .background(
-                                    Color(UIColor.systemGray6)
-                                )
-                                .clipShape(RoundedRectangle(cornerRadius: 12))
-                            
-                            Button(action: {
-                                addItem()
-                            } , label: {
-                                Spacer()
-                                Text("SAVE")
-                                Spacer()
-                            })
-                            .disabled(isButtonDisabled)
-                            .padding()
-                            .font(.headline)
-                            .foregroundStyle(.white)
-                            .background( isButtonDisabled ? Color.gray :
-                                            Color(UIColor.systemRed)
-                                         
-                            )
-                            .clipShape(RoundedRectangle(cornerRadius: 12))
-                            
+                        
+                        //MARK: - Header
+                        Spacer(minLength: 80)
+                        //MARK: - New Task Button
+                        Button(action: {
+                            showNewTaskItem = true
+                        }) {
+                            Image(systemName: "plus.circle")
+                                .font(.system(size: 30, weight: .bold, design: .rounded))
+                            Text("New Task")
+                                .font(.system(size: 24,weight: .bold,design: .rounded))
                         }
-                        .padding()
+                        .foregroundStyle(.white)
+                        .padding(.horizontal,20)
+                        .padding(.vertical,15)
+                        .background(
+                            LinearGradient(gradient: Gradient(colors: [Color.pink,Color.blue]), startPoint: .leading, endPoint: .trailing)
+                                .clipShape(Capsule())
+                        )
+                       
+                       
                         List {
                             ForEach(items) { item in
                                 
@@ -110,6 +86,16 @@ struct ContentView: View {
                         .padding()
                         .frame(maxWidth: 640)
                     }//VStack
+                    //MARK: - Tasks Items
+                    if showNewTaskItem{
+                        BlankView()
+                            .onTapGesture {
+                                withAnimation(){
+                                    showNewTaskItem = false
+                                }
+                            }
+                        NewTaskItemView(isShowing:  $showNewTaskItem)
+                    }
                 }//ZStack
 //                .onAppear(){
 //                    UITableView.appearance().backgroundColor = .clear
