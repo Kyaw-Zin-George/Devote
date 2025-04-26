@@ -12,6 +12,7 @@ struct ContentView: View {
     //MARK: - Property
     @State var task: String = ""
     @State private var showNewTaskItem: Bool = false
+    @AppStorage("isDarkMode") private var isDarkMode: Bool = false
     
     //Fetching Data
     @Environment(\.managedObjectContext) private var viewContext
@@ -47,6 +48,33 @@ struct ContentView: View {
                     VStack {
                         
                         //MARK: - Header
+                        HStack(spacing: 10) {
+                            //Title
+                            Text("Devote")
+                                .font(.system(.largeTitle,design: .rounded))
+                                .fontWeight(.heavy)
+                                .padding()
+                            Spacer()
+                            //Edit Button
+                            EditButton()
+                                .font(.system(size: 16, weight: .bold, design: .rounded))
+                                .padding(.horizontal, 10)
+                                .frame(minWidth: 70,minHeight: 24)
+                                .foregroundStyle(.white)
+                                .background(
+                                    Capsule().stroke(Color.white,lineWidth: 2)
+                                )
+                            //Appearance Button
+                            Button(action: {
+                                isDarkMode.toggle()
+                            }) {
+                                Image(systemName: isDarkMode ? "moon.circle.fill":"moon.circle")
+                                    .resizable()
+                                    .frame(width: 24,height: 24)
+                                    .foregroundStyle(.white)
+                            }
+                            
+                        }
                         Spacer(minLength: 80)
                         //MARK: - New Task Button
                         Button(action: {
@@ -103,14 +131,7 @@ struct ContentView: View {
                 
                 .navigationTitle("Daily Task")
                 .navigationBarTitleDisplayMode(.large)
-                .toolbar {
-                    #if os(iOS)
-                    ToolbarItem(placement: .navigationBarTrailing) {
-                        EditButton()
-                    }
-                    #endif
-                    
-                }//toolbar
+                .toolbar(.hidden)
                 .background(BackgroundImageView())
                 .background(backgroundGradient.ignoresSafeArea())
                 
