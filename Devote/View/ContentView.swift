@@ -35,6 +35,7 @@ struct ContentView: View {
                         
                         //MARK: - Header
                         HeaderView()
+                            .padding()
                         Spacer(minLength: 80)
                         //MARK: - New Task Button
                         Button(action: {
@@ -56,9 +57,14 @@ struct ContentView: View {
                         
                         TaskListView()
                     }//VStack
+                    .blur(radius: showNewTaskItem ? 8.0 : 0, opaque: false)
+                    .transition(.move(edge: .bottom))
+                    .animation(.easeOut(duration: 1), value: isDarkMode)
                     //MARK: - Tasks Items
                     if showNewTaskItem{
-                        BlankView()
+                        BlankView(
+                            backgroundColor: isDarkMode ?  Color.black : Color.gray,
+                            backgroundOpacity: 0.3)
                             .onTapGesture {
                                 withAnimation(){
                                     showNewTaskItem = false
@@ -76,11 +82,9 @@ struct ContentView: View {
                 .navigationTitle("Daily Task")
                 .navigationBarTitleDisplayMode(.large)
                 .toolbar(.hidden)
-                .background(BackgroundImageView())
+                .background(BackgroundImageView()
+                    .blur(radius: showNewTaskItem ? 8.0 : 0,opaque: false))
                 .background(backgroundGradient.ignoresSafeArea())
-                
-                
-                
                 
             }//navigation view
             
