@@ -14,29 +14,15 @@ struct ContentView: View {
     @State private var showNewTaskItem: Bool = false
     @AppStorage("isDarkMode") private var isDarkMode: Bool = false
     
-    //Fetching Data
-    @Environment(\.managedObjectContext) private var viewContext
-
-    @FetchRequest(
-        sortDescriptors: [NSSortDescriptor(keyPath: \Item.timestamp, ascending: true)],
-        animation: .default)
-    private var items: FetchedResults<Item>
+//    //Fetching Data
+//    @Environment(\.managedObjectContext) private var viewContext
+//
+//    @FetchRequest(
+//        sortDescriptors: [NSSortDescriptor(keyPath: \Item.timestamp, ascending: true)],
+//        animation: .default)
+//    private var items: FetchedResults<Item>
     
-    //MARK: - function
-   
-    private func deleteItems(offsets: IndexSet) {
-        withAnimation {
-            offsets.map { items[$0] }.forEach(viewContext.delete)
-
-            do {
-                try viewContext.save()
-            } catch {
-                
-                let nsError = error as NSError
-                fatalError("Unresolved error \(nsError), \(nsError.userInfo)")
-            }
-        }
-    }
+    
     
     //MARK: Body
     var body: some View {
@@ -48,33 +34,7 @@ struct ContentView: View {
                     VStack {
                         
                         //MARK: - Header
-                        HStack(spacing: 10) {
-                            //Title
-                            Text("Devote")
-                                .font(.system(.largeTitle,design: .rounded))
-                                .fontWeight(.heavy)
-                                .padding()
-                            Spacer()
-                            //Edit Button
-                            EditButton()
-                                .font(.system(size: 16, weight: .bold, design: .rounded))
-                                .padding(.horizontal, 10)
-                                .frame(minWidth: 70,minHeight: 24)
-                                .foregroundStyle(.white)
-                                .background(
-                                    Capsule().stroke(Color.white,lineWidth: 2)
-                                )
-                            //Appearance Button
-                            Button(action: {
-                                isDarkMode.toggle()
-                            }) {
-                                Image(systemName: isDarkMode ? "moon.circle.fill":"moon.circle")
-                                    .resizable()
-                                    .frame(width: 24,height: 24)
-                                    .foregroundStyle(.white)
-                            }
-                            
-                        }
+                        HeaderView()
                         Spacer(minLength: 80)
                         //MARK: - New Task Button
                         Button(action: {
@@ -93,26 +53,8 @@ struct ContentView: View {
                                 .clipShape(Capsule())
                         )
                        
-                       
-                        List {
-                            ForEach(items) { item in
-                                
-                                VStack(alignment: .leading) {
-                                    Text(item.task ?? "")
-                                        .font(.headline)
-                                        .fontWeight(.bold)
-                                    
-                                    Text("Item at \(item.timestamp!, formatter: itemFormatter)")
-                                        .font(.footnote)
-                                        .foregroundStyle(.gray)
-                                }
-                            }
-                            .onDelete(perform: deleteItems)
-                        }//List
-                        .listStyle(InsetGroupedListStyle())
-                        .shadow(color: Color(red: 0, green: 0, blue: 0), radius: 12)
-                        .padding()
-                        .frame(maxWidth: 640)
+                        
+                        TaskListView()
                     }//VStack
                     //MARK: - Tasks Items
                     if showNewTaskItem{
@@ -124,6 +66,8 @@ struct ContentView: View {
                             }
                         NewTaskItemView(isShowing:  $showNewTaskItem)
                     }
+                   
+
                 }//ZStack
 //                .onAppear(){
 //                    UITableView.appearance().backgroundColor = .clear
