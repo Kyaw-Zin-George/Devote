@@ -30,6 +30,8 @@ struct HeaderView: View {
             //Appearance Button
             Button(action: {
                 isDarkMode.toggle()
+                playSound(sound: "sound-tap", type: "mp3")
+                feedback.notificationOccurred(.success)
             }) {
                 Image(systemName: isDarkMode ? "moon.circle.fill":"moon.circle")
                     .resizable()
